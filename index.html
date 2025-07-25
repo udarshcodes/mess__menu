@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Mess Menu</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom font for better readability */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #20B2AA; /* Sea Green - a shade of sea blue */
+            color: #FFFFFF; /* White text */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: rgba(0, 0, 0, 0.3); /* Slightly transparent dark background for content */
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        h1, h2, h3 {
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+            margin-bottom: 15px;
+        }
+        li {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+        .meal-section {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .meal-section h3 {
+            margin-top: 0;
+            color: #ADD8E6; /* Light Blue for meal headings */
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-top: 50px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            h2 {
+                font-size: 1.4rem;
+            }
+            h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body class="selection:bg-blue-300 selection:text-blue-900">
+    <div class="container">
+        <h1 class="text-3xl md:text-4xl text-center mb-6">Daily Mess Menu</h1>
+        <p class="text-lg text-center mb-8" id="current-date-info"></p>
+
+        <div id="loading" class="loading-spinner mx-auto"></div>
+
+        <div id="menu-content" class="hidden">
+            <h2 class="text-2xl md:text-3xl text-center mb-6" id="week-type-heading"></h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="meal-section">
+                    <h3 class="text-xl">Morning</h3>
+                    <ul id="morning-menu"></ul>
+                </div>
+                <div class="meal-section">
+                    <h3 class="text-xl">Lunch</h3>
+                    <ul id="lunch-menu"></ul>
+                </div>
+                <div class="meal-section">
+                    <h3 class="text-xl">Snacks</h3>
+                    <ul id="snacks-menu"></ul>
+                </div>
+                <div class="meal-section">
+                    <h3 class="text-xl">Dinner</h3>
+                    <ul id="dinner-menu"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Define the menu data for Week 1 & 3
+        const menuWeek1_3 = {
+            Monday: {
+                morning: [
+                    "Poori / White Channa",
+                    "Millet Mixed Idly + Dal / Sambar + Tomato Podhina Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Phulka + Dry Veg Kadai Semi Gravy + Dal",
+                    "Tomato Rice",
+                    "White Rice: Drumstick Sambar + Carrot & Beans Mixed Poriyal + Rasam + Curd",
+                    "Parupu Podi + Ghee + Thoraviyal + Pickle + Papad",
+                    "Fruit + Lemon Mini Juice"
+                ],
+                snacks: [
+                    "Veg Samosa + Sweet Chutney",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Phulka + Corn Masala + Jeera Dal",
+                    "White Rice + Dry Cabbage Poriyal",
+                    "Rasam + Curd + Pickle",
+                    "Chocolate Ice Cream + Milk"
+                ]
+            },
+            Tuesday: {
+                morning: [
+                    "Paneer Paratha + Tomato Onion Gravy + Curd",
+                    "Rava Idly + Vada + Sambar + Coconut Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Veg Pulao + Onion Raitha + Dal",
+                    "White Rice + Mochai Kara Kolambu + Indulagai Poriyal + Rasam",
+                    "Parupu Podi + Gingelly Oil + Thoraviyal + Pickle + Fryums",
+                    "Banana Green + Butter Milk"
+                ],
+                snacks: [
+                    "MysoreBonda",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Chapathi + Soya Chunk Gravy",
+                    "Lemon Rice + Aloo Varruval (Fry)",
+                    "White Rice + Beans Poriyal + Rasam + Curd + Pickle",
+                    "Milk",
+                    "Salad"
+                ]
+            },
+            Wednesday: {
+                morning: [
+                    "Rava Upma",
+                    "Masala Dosai + Sambar + Groundnut Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Chapathi + Palak Paneer",
+                    "Ghee Rice + Dal",
+                    "White Rice + Radish Sambar + Keerai Poriyal + Rasam",
+                    "Parupu Podi + Ghee + Thoraviyal + Pickle + Papad",
+                    "Fru
+                    it (Papaya) + Lemon Mint Juice"
+                ],
+                snacks: [
+                    "Dahi Vada",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "White Channa Masala + Atta Poori",
+                    "White Rice + More Kolambu + Mixed Vegetable Poriyal + Rasam + Pickle",
+                    "Veg Salad + Strawberry Milk"
+                ]
+            },
+            Thursday: {
+                morning: [
+                    "Aloo Stuffed Paratha + Curd + Pickle",
+                    "Andra Bonda + Idly + Chettinad Kaara Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Phulka + Sweet Corn Masala",
+                    "Bisbella Bath + Potato Chips",
+                    "White Rice + Kaaramani Poriyal + Rasam + Curd",
+                    "Parupu Podi + Gingelly Oil + Butter Milk + Thoraviyal + Pickle",
+                    "Fruit Salad (Green Grapes + Papaya)"
+                ],
+                snacks: [
+                    "Onion Kachori",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Chapathi + Veg Kadai Gravy",
+                    "Lemon Seva + Abrar Dal Tadka + Coconut Chutney",
+                    "White Rice + Bhindi Masala Dry + Rasam + Curd",
+                    "Cold Badam + Salad"
+                ]
+            },
+            Friday: {
+                morning: [
+                    "Onion Dosa Veg Partha + Tomato Chutney + Curd",
+                    "Poori (Veg Kuram) + Sambar + Peanut Onion Chutney",
+                    "Toasted Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Phulka + Matta Methi Gravy + Malai Dal",
+                    "Tomato Pulao",
+                    "White Rice + Brinjal Sambar + Potato Patani Masivai + Rasam + Mint Buttermilk",
+                    "Parupu Podi + Ghee + Thoraviyal + Onion + Pickle + Papad",
+                    "Fruit (Watermelon)"
+                ],
+                snacks: [
+                    "Banana Hajji + Coconut Chutney",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Oil Chapathi + Karamani Gravy",
+                    "Idly + Chutney + Sambar",
+                    "White Rice + Gobi 65 + Rasam + Curd + Pickle",
+                    "Jalabi + Salad"
+                ]
+            },
+            Saturday: {
+                morning: [
+                    "Onion Dosa + Sambar + Mint, Coriander & Curry Leaves Chutney",
+                    "Veg Kolambu",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Phulka + Dal Tadka",
+                    "Setuvan Fried Rice + Veg Manchurian",
+                    "White Rice + Ladies Finger Sambar + Keerai Poriyal + Kootu + Rasam + Curd",
+                    "Parupu Podi + Gingelly Oil + Thoraviyal + Fryums + Pickle",
+                    "Fruit (Banana) + Lemon Mint Juice"
+                ],
+                snacks: [
+                    "Salted Peanut",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Phulka + Cauliflower Aloo Masala",
+                    "Jeera Rice + Dal Fry",
+                    "Plain Rice + Kadhi Pakoda Curry + Rasam + Masala Curd",
+                    "Papad + Pickle + Salad + Milk"
+                ]
+            },
+            Sunday: {
+                morning: [
+                    "Pav Bajji + Masala",
+                    "Millet Mixed Pongal + Vada + Sambar + Coconut Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Chapathi / Paneer Butter Masala",
+                    "Dun Veg Biryani + Gobi and Aloo Mixed Fry + Onion Raitha + Curd Rice",
+                    "Pickle",
+                    "Fruit (Watermelon + Grapes) + Lemon Mint Juice"
+                ],
+                snacks: [
+                    "Salted Peanut", // Corrected based on image, "Breakfast + Lunch + Dinner..." was a note.
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Pulka + Dal Makhani",
+                    "Masala Dosa + Chutney + Sambar",
+                    "White Rice + Capsicum Fry + Rasam",
+                    "Gulab Jamun + Salad"
+                ]
+            }
+        };
+
+        // Define the menu data for Week 2 & 4
+        const menuWeek2_4 = {
+            Monday: {
+                morning: [
+                    "Poori / White Channa",
+                    "Millet Mixed Idly + Dal / Sambar + Tomato Podhina Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Phulka + Aloo Peas + Dal",
+                    "Tomato Rice",
+                    "White Rice: Drumstick Sambar + Carrot & Beans Mixed Poriyal + Rasam + Curd",
+                    "Parupu Podi + Ghee + Thoraviyal + Pickle + Papad"
+                ],
+                snacks: [
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "White Rice + Bhindi Masala",
+                    "Rasam + Curd + Pickle",
+                    "Vanilla Ice Cream + Salad (Beetroot) + Milk"
+                ]
+            },
+            Tuesday: {
+                morning: [
+                    "Paneer Paratha + Tomato Onion Gravy + Curd",
+                    "Rava Idly + Vada + Sambar + Coconut Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Veg Pulao + Onion Raitha + Dal",
+                    "White Rice + Mochai Kara Kolambu + Indulagai Poriyal + Rasam",
+                    "Parupu Podi + Gingelly Oil + Thoraviyal + Pickle + Fryums"
+                ],
+                snacks: [
+                    "Veg Puff + Samosa",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Chapathi + Veg Hariyali",
+                    "Coconut Rice + Aloo Varruval (Fry)",
+                    "White Rice + Beans Poriyal + Rasam + Curd + Pickle",
+                    "Milk",
+                    "Sanji Halwa"
+                ]
+            },
+            Wednesday: {
+                morning: [
+                    "Rava Upma",
+                    "Masala Dosai + Sambar + Groundnut Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Chapathi + Palak Paneer",
+                    "Ghee Rice + Dal",
+                    "White Rice + Radish Sambar + Keerai Poriyal + Rasam",
+                    "Parupu Podi + Ghee + Thoraviyal + Pickle + Papad"
+                ],
+                snacks: [
+                    "Sambar Vada",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "White Channa Masala + Phulka",
+                    "White Rice + More Kolambu + Mixed Vegetable Poriyal + Rasam + Pickle",
+                    "Veg Salad + Strawberry Milk"
+                ]
+            },
+            Thursday: {
+                morning: [
+                    "Aloo Stuffed Paratha + Curd + Pickle",
+                    "Andra Bonda + Idly + Chettinad Kaara Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Phulka + Sweet Corn Masala",
+                    "Bisbella Bath + Potato Chips",
+                    "White Rice + Kaaramani Poriyal + Rasam + Curd",
+                    "Parupu Podi + Gingelly Oil + Butter Milk + Thoraviyal + Pickle"
+                ],
+                snacks: [
+                    "Pasta",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Chapathi + Dry Aloo Jeera",
+                    "Tomato Seva + Sambar + Coconut Chutney",
+                    "White Rice + Saunf Beans Poriyal + Rasam + Curd",
+                    "Chocolate Milkshake + Salad"
+                ]
+            },
+            Friday: {
+                morning: [
+                    "Onion Dosa Veg Partha + Tomato Chutney + Curd",
+                    "Poori (Veg Kuram) + Sambar + Peanut Onion Chutney",
+                    "Toasted Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Phulka + Matta Methi Gravy + Malai Dal",
+                    "Tomato Pulao",
+                    "White Rice + Brinjal Sambar + Potato Patani Masivai + Rasam + Mint Buttermilk",
+                    "Parupu Podi + Ghee + Thoraviyal + Onion + Pickle + Papad"
+                ],
+                snacks: [
+                    "Papdi Chat",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Oil Chapathi + Black Channa Masala",
+                    "Idly + Chutney + Sambar",
+                    "White Rice + Gobi 65 + Rasam + Curd + Pickle",
+                    "Mothichar Ladoo"
+                ]
+            },
+            Saturday: {
+                morning: [
+                    "Onion Dosa + Sambar + Mint, Coriander & Curry Leaves Chutney",
+                    "Veg Kolambu",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Phulka + Dal Tadka",
+                    "Setuvan Fried Rice + Veg Manchurian",
+                    "White Rice + Ladies Finger Sambar + Keerai Poriyal + Kootu + Rasam + Curd",
+                    "Parupu Podi + Gingelly Oil + Thoraviyal + Fryums + Pickle"
+                ],
+                snacks: [
+                    "Masala Sweetcorn",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Phulka + Dry Aloo Jeera",
+                    "Jeera Rice + Dal Fry",
+                    "Plain Rice + Kadhi Pakoda Curry + Rasam + Masala Curd",
+                    "Papad + Pickle + Salad + Milk"
+                ]
+            },
+            Sunday: {
+                morning: [
+                    "Pav Bajji + Masala",
+                    "Millet Mixed Pongal + Vada + Sambar + Coconut Chutney",
+                    "Bread + Butter + Jam",
+                    "Tea / Coffee"
+                ],
+                lunch: [
+                    "Chapathi / Paneer Butter Masala",
+                    "Dun Veg Biryani + Gobi and Aloo Mixed Fry + Onion Raitha + Curd Rice",
+                    "Pickle"
+                ],
+                snacks: [
+                    "Veg Cutlet",
+                    "Tea / Coffee / Milk"
+                ],
+                dinner: [
+                    "Pulka + Dal Makhani",
+                    "Masala Dosa + Chutney + Sambar",
+                    "White Rice + Capsicum Fry + Rasam",
+                    "Gulab Jamun + Salad"
+                ]
+            }
+        };
+
+        // Function to get the current week number of the year
+        function getWeekNumber(d) {
+            // Copy date so don't modify original
+            d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+            // Set to nearest Thursday: current date + 4 - current day number
+            // Make Sunday's day number 7
+            d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+            // Get first day of year
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            // Calculate full weeks to nearest Thursday
+            var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+            return weekNo;
+        }
+
+        // Function to display the menu
+        function displayMenu() {
+            console.log("displayMenu function started.");
+            const today = new Date();
+            const dayOfWeek = today.toLocaleString('en-US', { weekday: 'long' }); // e.g., "Monday"
+            const formattedDate = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            document.getElementById('current-date-info').textContent = `Today is ${formattedDate}`;
+            console.log(`Current Date: ${formattedDate}, Day of Week: ${dayOfWeek}`);
+
+            const weekNumber = getWeekNumber(today);
+            console.log(`Calculated Week Number: ${weekNumber}`);
+
+            const isOddWeek = weekNumber % 2 !== 0; // True for Week 1, 3, 5...
+            const currentMenu = isOddWeek ? menuWeek1_3 : menuWeek2_4;
+            const weekTypeHeading = document.getElementById('week-type-heading');
+            weekTypeHeading.textContent = `Menu for Week ${isOddWeek ? '1 & 3' : '2 & 4'}`;
+            console.log(`Selected Menu: Week ${isOddWeek ? '1 & 3' : '2 & 4'}`);
+
+
+            const menuForToday = currentMenu[dayOfWeek];
+            console.log("Menu for today object:", menuForToday);
+
+
+            if (menuForToday) {
+                document.getElementById('morning-menu').innerHTML = menuForToday.morning.map(item => `<li>${item}</li>`).join('');
+                document.getElementById('lunch-menu').innerHTML = menuForToday.lunch.map(item => `<li>${item}</li>`).join('');
+                document.getElementById('snacks-menu').innerHTML = menuForToday.snacks.map(item => `<li>${item}</li>`).join('');
+                document.getElementById('dinner-menu').innerHTML = menuForToday.dinner.map(item => `<li>${item}</li>`).join('');
+                console.log("Menu content populated successfully.");
+            } else {
+                document.getElementById('menu-content').innerHTML = `<p class="text-center text-red-400">Menu data not available for ${dayOfWeek}.</p>`;
+                console.warn(`Menu data not found for ${dayOfWeek}.`);
+            }
+
+            // Hide loading spinner and show content
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('menu-content').classList.remove('hidden');
+            console.log("Loading spinner hidden, menu content shown.");
+        }
+
+        // Call displayMenu when the page loads
+        window.onload = displayMenu;
+        console.log("window.onload event listener set.");
+    </script>
+</body>
+</html>
