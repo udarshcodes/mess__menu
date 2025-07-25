@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Mess Menu</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom font for better readability */
@@ -178,7 +179,7 @@
                     "Ghee Rice + Dal",
                     "White Rice + Radish Sambar + Keerai Poriyal + Rasam",
                     "Parupu Podi + Ghee + Thoraviyal + Pickle + Papad",
-                    "Fruit (Papaya) + Lemon Mint Juice" // Corrected this line
+                    "Fruit (Papaya) + Lemon Mint Juice"
                 ],
                 snacks: [
                     "Dahi Vada",
@@ -212,7 +213,7 @@
                     "Chapathi + Veg Kadai Gravy",
                     "Lemon Seva + Abrar Dal Tadka + Coconut Chutney",
                     "White Rice + Bhindi Masala Dry + Rasam + Curd",
-                    "Cold Badam + Salad"
+                    "Chocolate Milkshake + Salad"
                 ]
             },
             Friday: {
@@ -519,9 +520,9 @@
             }
         }
 
-        // Call displayMenu when the page loads
-        window.onload = displayMenu;
-        console.log("window.onload event listener set.");
+        // Call displayMenu when the DOM is fully loaded, without waiting for external resources
+        document.addEventListener('DOMContentLoaded', displayMenu);
+        console.log("DOMContentLoaded event listener set.");
     </script>
 </body>
 </html>
